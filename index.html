@@ -43,7 +43,6 @@
             max-height: 90vh; overflow-y: auto; position: relative;
         }
 
-        /* BUSCA COM BOTÃO X */
         .search-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
         input#searchInput {
             width: 100%; padding: 15px; padding-right: 45px;
@@ -60,7 +59,6 @@
         }
         .btn-clear-search:hover { color: var(--primary); }
 
-        /* LOADING */
         .loader-container { display: flex; flex-direction: column; align-items: center; padding: 50px 0; }
         .spinner {
             width: 50px; height: 50px; border: 5px solid rgba(255, 255, 255, 0.1);
@@ -115,7 +113,10 @@
         </div>
 
         <div id="faq-content" class="hidden">
-            <h2 style="color: var(--primary); margin-top: 0; text-align: center;">FAQ</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h2 style="color: var(--primary); margin: 0;">FAQ</h2>
+                <button onclick="logout()" style="background: none; border: none; color: #666; cursor: pointer; font-size: 11px;">Sair</button>
+            </div>
             <div class="search-wrapper">
                 <input type="text" id="searchInput" placeholder="Pesquisar..." onkeyup="handleSearch()" autofocus>
                 <button id="btnClear" class="btn-clear-search" onclick="clearSearch()">✕</button>
@@ -126,8 +127,16 @@
 
 <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbwOP2umvwMcb9O-W706xGoykmrRRqurI3vbLCkU99Xnff9sr_8lCfNAlQjBYuokWyJL/exec';
-    const SENHA = "123321";
+    const SENHA_CORRETA = "123321";
     let banco = [];
+
+    // --- NOVA FUNÇÃO: VERIFICAÇÃO AUTOMÁTICA AO ABRIR ---
+    window.onload = function() {
+        const senhaSalva = localStorage.getItem('deusot_token');
+        if (senhaSalva === SENHA_CORRETA) {
+            exibirFAQ();
+        }
+    };
 
     window.addEventListener('keydown', (e) => {
         if (e.key === "Escape") clearSearch();
@@ -138,11 +147,24 @@
     }
 
     function entrar() {
-        if(document.getElementById('passInput').value === SENHA) {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('loading-screen').classList.remove('hidden');
-            carregar();
-        } else { alert("Senha incorreta."); }
+        const inputSenha = document.getElementById('passInput').value;
+        if(inputSenha === SENHA_CORRETA) {
+            localStorage.setItem('deusot_token', inputSenha); // Salva a senha no navegador
+            exibirFAQ();
+        } else { 
+            alert("Senha incorreta."); 
+        }
+    }
+
+    function exibirFAQ() {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('loading-screen').classList.remove('hidden');
+        carregar();
+    }
+
+    function logout() {
+        localStorage.removeItem('deusot_token');
+        location.reload();
     }
 
     async function carregar() {
@@ -186,10 +208,12 @@
 
     function clearSearch() {
         const input = document.getElementById('searchInput');
-        input.value = '';
-        input.focus();
-        document.getElementById('btnClear').style.display = 'none';
-        render(banco);
+        if(input) {
+            input.value = '';
+            input.focus();
+            document.getElementById('btnClear').style.display = 'none';
+            render(banco);
+        }
     }
 
     function copiar(txt, btn) {
