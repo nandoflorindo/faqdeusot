@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ciclopédia Tutor - Deusot</title>
+    <style>
+        :root {
+            --primary: #00ffcc;
+            --bg-glass: rgba(0, 0, 0, 0.65); /* Fundo escuro semitransparente */
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --text: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            /* FUNDO FIXO E CENTRALIZADO */
+            background: url('fundosite.png') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: var(--text);
+        }
+
+        /* LOGOTIPO NO CANTO ESQUERDO */
+        .logo-fixo {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            width: 140px;
+            z-index: 100;
+            filter: drop-shadow(0 0 15px rgba(0, 255, 204, 0.4));
+        }
+
+        /* CONTAINER PRINCIPAL (ESTILO VIDRO) */
+        .main-container {
+            width: 90%;
+            max-width: 800px;
+            background: var(--bg-glass);
+            margin: 40px 0;
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(10px); /* Efeito de desfoque no fundo */
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            z-index: 2;
+        }
+
+        /* TELA DE LOGIN */
+        #login-screen { text-align: center; padding: 50px 0; }
+        #login-screen h2 { color: var(--primary); text-transform: uppercase; letter-spacing: 2px; }
+
+        /* BUSCA */
+        .header h2 { text-align: center; color: var(--primary); margin-bottom: 25px; text-transform: uppercase; }
+        .search-box { margin-bottom: 25px; }
+        input {
+            width: 100%;
+            padding: 18px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 255, 204, 0.2); }
+
+        /* LISTA DE RESULTADOS */
+        .faq-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-glass);
+            transition: 0.2s;
+        }
+        .faq-item:hover { background: rgba(255, 255, 255, 0.07); border-color: var(--primary); }
+
+        .pergunta { color: var(--primary); font-weight: bold; margin-bottom: 8px; font-size: 16px; }
+        .resposta { color: #ccc; font-size: 14px; line-height: 1.6; }
+
+        /* BOTÃO COPIAR */
+        .btn-copy {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            min-width: 100px;
+            transition: 0.3s;
+        }
+        .btn-copy:hover { background: var(--primary); color: #000; }
+        .btn-copy.success { background: #238636; border-color: #238636; color: white; }
+
+        .hidden { display: none !important; }
+
+        /* SCROLLBAR GAMER */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <img src="logo.png" alt="Deusot Logo" class="logo-fixo">
+
+    <div class="main-container">
+        <div id="login-screen">
+            <h2>Acesso Restrito</h2>
+            <input type="password" id="passInput" placeholder="Senha de Tutor" onkeypress="if(event.key === 'Enter') entrar()" style="max-width: 300px; margin: 0 auto; display: block;">
+            <button class="btn-copy" style="margin-top: 25px; width: 100%; max-width: 300px; padding: 15px;" onclick="entrar()">Desbloquear</button>
+        </div>
+
+        <div id="faq-content" class="hidden">
+            <div class="header"><h2>Ciclopédia Deusot</h2></div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Pesquisar comando ou dúvida..." onkeyup="handleSearch()" autofocus>
+            </div>
+            <div id="results">Sincronizando com a alma do Zeus...</div>
+        </div>
+    </div>
+
+<script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwOP2umvwMcb9O-W706xGoykmrRRqurI3vbLCkU99Xnff9sr_8lCfNAlQjBYuokWyJL/exec';
+    const SENHA = "123321";
+    let banco = [];
+
+    function entrar() {
+        if(document.getElementById('passInput').value === SENHA) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('faq-content').classList.remove('hidden');
+            carregar();
+        } else { alert("Senha incorreta!"); }
+    }
+
+    async function carregar() {
+        const res = await fetch(API_URL);
+        banco = await res.json();
+        render(banco);
+    }
+
+    function render(lista) {
+        const out = document.getElementById('results');
+        out.innerHTML = lista.map(item => `
+            <div class="faq-item">
+                <div style="flex:1; padding-right:15px;">
+                    <div class="pergunta">${item.pergunta}</div>
+                    <div class="resposta">${item.resposta}</div>
+                </div>
+                <button class="btn-copy" onclick="copiar('${item.resposta.replace(/'/g, "\\'")}', this)">Copiar</button>
+            </div>
+        `).join('');
+    }
+
+    function handleSearch() {
+        const t = document.getElementById('searchInput').value.toLowerCase();
+        render(banco.filter(i => i.pergunta.toLowerCase().includes(t) || i.resposta.toLowerCase().includes(t)));
+    }
+
+    function copiar(txt, btn) {
+        navigator.clipboard.writeText(txt);
+        const original = btn.innerText;
+        btn.innerText = "COPIADO";
+        btn.classList.add('success');
+        setTimeout(() => { btn.innerText = original; btn.classList.remove('success'); }, 800);
+    }
+</script>
+</body>
+</html>
