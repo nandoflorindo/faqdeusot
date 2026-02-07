@@ -32,13 +32,23 @@
         
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 3000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal.active { visibility: visible; opacity: 1; }
-        .modal-content { background: #0a0f14; border: 2px solid var(--primary); padding: 25px; border-radius: 15px; width: 95%; max-width: 750px; position: relative; }
+        .modal-content { background: #0a0f14; border: 2px solid var(--primary); padding: 25px; border-radius: 15px; width: 95%; max-width: 750px; position: relative; box-shadow: 0 0 25px var(--primary-glow); }
         
         .server-column { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid rgba(0, 217, 255, 0.2); }
         .server-column h4 { color: var(--primary); text-align: center; border-bottom: 1px solid var(--primary); padding-bottom: 5px; margin-top:0; text-transform: uppercase; font-size: 13px; }
         .tutor-row { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; color: #ccc; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .dot { width: 8px; height: 8px; border-radius: 50%; background: #444; }
         .dot.active { background: #00ff88; box-shadow: 0 0 8px #00ff88; }
+
+        /* ESTILOS ADMIN & FILTROS */
+        .admin-filters { display: flex; gap: 10px; margin-bottom: 15px; justify-content: center; }
+        .btn-filter { padding: 8px 12px; background: rgba(0, 217, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: bold; transition: 0.3s; }
+        .btn-filter.active { background: var(--primary); color: #000; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: rgba(0, 0, 0, 0.3); border-radius: 8px; overflow: hidden; }
+        .admin-table th { background: rgba(0, 217, 255, 0.1); color: var(--primary); text-align: left; padding: 12px 15px; font-size: 13px; text-transform: uppercase; border-bottom: 2px solid var(--primary); }
+        .admin-table td { padding: 12px 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; color: #eee; }
+        .txt-horas { font-weight: bold; color: var(--success); text-align: right; }
+        .btn-danger-ui { width: 100%; margin-top: 20px; padding: 12px; background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; color: #ff4444; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
 
         .search-wrapper { position: relative; width: 100%; margin: 15px 0; }
         input.search-input { width: 100%; padding: 15px; padding-right: 45px; background: rgba(0, 0, 0, 0.6); border: 2px solid #444; border-radius: 10px; color: #fff; outline: none; box-sizing: border-box; }
@@ -47,7 +57,6 @@
 
         .spinner { width: 50px; height: 50px; border: 5px solid rgba(0, 217, 255, 0.1); border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .hidden { display: none !important; }
     </style>
 </head>
@@ -58,7 +67,7 @@
     <div class="quick-links">
         <a href="https://deusot.com/" target="_blank" class="link-card">SITE OFICIAL 🌐</a>
         <div class="link-card" onclick="toggleModal('tutorModal', true)">LISTA DE TUTORES 👥</div>
-        <div id="adminQuickBtn" class="link-card hidden" style="border-color:#ffcc00; color:#ffcc00;" onclick="toggleModal('adminModal', true)">ADMIN / RELATÓRIO 📊</div>
+        <div id="adminQuickBtn" class="link-card hidden" style="border-color:#ffcc00; color:#ffcc00;" onclick="toggleModal('adminModal', true)">ADMIN 📊</div>
         <div class="link-card" onclick="fazerLogout()">SAIR 🚪</div>
     </div>
 
@@ -76,16 +85,16 @@
 
     <div class="modal" id="adminModal" onclick="if(event.target == this) toggleModal('adminModal', false)">
         <div class="modal-content">
+            <span style="position:absolute; top:10px; right:15px; cursor:pointer; color:var(--primary); font-weight:bold;" onclick="toggleModal('adminModal', false)">✖</span>
             <h3 style="color: #ffcc00; text-align: center; margin-top:0;">RELATÓRIO DE STAFF</h3>
-            <div id="adminReport" style="max-height: 350px; overflow-y: auto;"></div>
-            <button onclick="confirmarLimpeza()" style="background:#ff4444; color:#fff; border:none; padding:10px; border-radius:5px; cursor:pointer; width:100%; margin-top:10px;">LIMPAR LOGS</button>
+            <div id="adminReport" style="max-height: 400px; overflow-y: auto;"></div>
         </div>
     </div>
 
     <div class="main-container">
         <div id="login-screen" class="login-box">
-            <h2 style="color: var(--primary); text-align: center; margin-bottom: 5px;">🛡️ STAFF LOGIN</h2>
-            <input type="text" id="userInput" class="login-field" placeholder="Seu Nick">
+            <h2 style="color: var(--primary); text-align: center; margin-bottom: 5px;">🛡️ LOGIN</h2>
+            <input type="text" id="userInput" class="login-field" placeholder="Nick do Personagem">
             <input type="password" id="passInput" class="login-field" placeholder="Senha da Staff" onkeypress="if(event.key === 'Enter') entrar()">
             <button class="btn-main" onclick="entrar()">ENTRAR NO PAINEL</button>
         </div>
@@ -93,7 +102,7 @@
         <div id="loading-screen" class="hidden">
             <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:50px;">
                 <div class="spinner"></div>
-                <p style="color: var(--primary); font-weight:bold;">SINCRONIZANDO...</p>
+                <p style="color: var(--primary); font-weight:bold;">SINCRONIZANDO COM O SERVIDOR...</p>
             </div>
         </div>
 
@@ -105,7 +114,7 @@
                 <p id="avisoTexto" style="font-size: 13px; color: #ccc; margin: 5px 0 0 0;"></p>
             </div>
             <div class="search-wrapper">
-                <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar comando ou dúvida..." onkeyup="handleSearch()">
+                <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar..." onkeyup="handleSearch()">
                 <button id="btnClear" class="btn-clear" onclick="clearSearch()">✕</button>
             </div>
             <div id="results"></div>
@@ -129,16 +138,17 @@
         { nick: "Lord escanor", server: "Titan", admin: false, dono: "Lord" },
         { nick: "Grazyela", server: "Titan", admin: false, dono: "Grazy" },
 		{ nick: "Rafz Zagz", server: "Mercúrio", admin: false, dono: "Rafz" },
-		{ nick: "Gato Titanico", server: "Titan", admin: false, dono: "Gato" }
+		{ nick: "Gato Titanico", server: "Titan", admin: false, dono: "Gato" },
+		{ nick: "Art Flam", server: "Titan", admin: false, dono: "Art" }
     ];
 
     let bancoFAQ = [];
     let meusChars = [];
     let statusAtivos = {};
+    let logsBrutos = {};
 
     window.addEventListener('keydown', (e) => { if (e.key === "Escape") clearSearch(); });
 
-    // --- VERIFICAÇÃO DE LOGIN AO CARREGAR O SITE (F5) ---
     window.onload = () => {
         const salvo = localStorage.getItem('deusot_session');
         if(salvo) {
@@ -157,12 +167,9 @@
         const input = document.getElementById('userInput').value.trim();
         const pass = document.getElementById('passInput').value;
         const find = listaStaff.find(s => s.nick.toLowerCase() === input.toLowerCase());
-        
         if(find && pass === "123321") {
-            // Salva na memória do navegador
             localStorage.setItem('deusot_session', 'true');
             localStorage.setItem('deusot_nick', find.nick);
-            
             meusChars = listaStaff.filter(s => s.dono === find.dono);
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('loading-screen').classList.remove('hidden');
@@ -170,10 +177,7 @@
         } else { alert("Nick ou Senha incorretos!"); }
     }
 
-    function fazerLogout() {
-        localStorage.clear();
-        location.reload();
-    }
+    function fazerLogout() { localStorage.clear(); location.reload(); }
 
     async function carregarTudo(isAdmin) {
         try {
@@ -225,7 +229,7 @@
             db.ref('status/' + nickKey).onDisconnect().remove();
         } else {
             const min = Math.round((Date.now() - statusAtivos[nick]) / 60000);
-            db.ref('logs/' + nickKey).push({ tutor: nick, minutos: min, dataISO: new Date().toISOString().split('T')[0] });
+            db.ref('logs/' + nickKey).push({ tutor: nick, minutos: min, ts: Date.now() });
             db.ref('status/' + nickKey).remove();
             btn.innerText = "OFFLINE"; btn.className = "btn-status-mini status-off";
             delete statusAtivos[nick];
@@ -233,9 +237,7 @@
     }
 
     function render(lista) {
-        const out = document.getElementById('results');
-        if(!out) return;
-        out.innerHTML = lista.map(i => `
+        document.getElementById('results').innerHTML = lista.map(i => `
             <div class="faq-item">
                 <div style="flex:1;">
                     <div style="font-weight:bold; color:var(--primary);">${i.pergunta}</div>
@@ -256,6 +258,46 @@
         }, 1000);
     }
 
+    async function abrirAdmin() {
+        const modal = document.getElementById('adminModal');
+        modal.classList.add('active');
+        const report = document.getElementById('adminReport');
+        report.innerHTML = "<p style='text-align:center;'>Processando...</p>";
+        const snap = await db.ref('logs').once('value');
+        logsBrutos = snap.val() || {};
+        filtrarRelatorio(0); 
+    }
+
+    function filtrarRelatorio(dias) {
+        const stats = {};
+        const agora = Date.now();
+        const limiteMs = dias * 24 * 60 * 60 * 1000;
+        for(let k in logsBrutos) for(let id in logsBrutos[k]) {
+            const i = logsBrutos[k][id];
+            if (dias === 0 || (agora - i.ts) <= limiteMs) {
+                if(!stats[i.tutor]) stats[i.tutor] = 0;
+                stats[i.tutor] += i.minutos;
+            }
+        }
+        renderizarTabelaAdmin(stats, dias);
+    }
+
+    function renderizarTabelaAdmin(stats, filtroAtivo) {
+        const report = document.getElementById('adminReport');
+        let h = `<div class="admin-filters">
+            <button class="btn-filter ${filtroAtivo === 1 ? 'active' : ''}" onclick="filtrarRelatorio(1)">HOJE</button>
+            <button class="btn-filter ${filtroAtivo === 7 ? 'active' : ''}" onclick="filtrarRelatorio(7)">7 DIAS</button>
+            <button class="btn-filter ${filtroAtivo === 30 ? 'active' : ''}" onclick="filtrarRelatorio(30)">30 DIAS</button>
+            <button class="btn-filter ${filtroAtivo === 0 ? 'active' : ''}" onclick="filtrarRelatorio(0)">TUDO</button>
+        </div>
+        <table class="admin-table"><thead><tr><th>Tutor</th><th style="text-align:right;">Tempo Total</th></tr></thead><tbody>`;
+        const ks = Object.keys(stats);
+        if(ks.length === 0) h += `<tr><td colspan="2" style="text-align:center;">Sem logs neste período.</td></tr>`;
+        else ks.forEach(n => h += `<tr><td><strong>${n}</strong></td><td class="txt-horas">${(stats[n]/60).toFixed(1)}h</td></tr>`);
+        h += `</tbody></table><button class="btn-danger-ui" onclick="confirmarLimpeza()">Limpar Logs</button>`;
+        report.innerHTML = h;
+    }
+
     function handleSearch() {
         const q = document.getElementById('searchInput').value.toLowerCase();
         document.getElementById('btnClear').style.display = q ? 'block' : 'none';
@@ -263,22 +305,8 @@
     }
 
     function clearSearch() { document.getElementById('searchInput').value = ''; document.getElementById('btnClear').style.display = 'none'; render(bancoFAQ); }
+    function confirmarLimpeza() { if(confirm("Apagar tudo? Isso removerá os logs permanentemente.")) { db.ref('logs').remove(); abrirAdmin(); } }
     function toggleModal(id, show) { document.getElementById(id).classList.toggle('active', show); if(id === 'adminModal' && show) abrirAdmin(); }
-    
-    async function abrirAdmin() {
-        const snap = await db.ref('logs').once('value');
-        const logs = snap.val() || {};
-        let html = "<table style='width:100%; border-collapse:collapse; color:#ccc;'><tr><th style='text-align:left; color:var(--primary);'>TUTOR</th><th>TOTAL (Horas)</th></tr>";
-        const stats = {};
-        for(let n in logs) for(let id in logs[n]) {
-            const i = logs[n][id];
-            if(!stats[i.tutor]) stats[i.tutor] = 0;
-            stats[i.tutor] += i.minutos;
-        }
-        for(let n in stats) html += `<tr style='border-bottom:1px solid #222;'><td style='padding:8px;'>${n}</td><td>${(stats[n]/60).toFixed(1)}h</td></tr>`;
-        document.getElementById('adminReport').innerHTML = html + "</table>";
-    }
-    function confirmarLimpeza() { if(confirm("Apagar tudo?")) { db.ref('logs').remove(); abrirAdmin(); } }
 </script>
 </body>
 </html>
