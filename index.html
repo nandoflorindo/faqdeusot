@@ -3,110 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ Tutores DeusOT - DeusOT</title>
+    <title>FAQ DeusOT</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    
     <style>
-        :root { 
-            --primary: #00d9ff; /* AZUL NEON */
-            --primary-glow: rgba(0, 217, 255, 0.4);
-            --text: #ffffff; 
-        }
+        :root { --primary: #00d9ff; --primary-glow: rgba(0, 217, 255, 0.4); --success: #00ff88; --text: #ffffff; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background: url('fundosite.png') no-repeat center center fixed; background-size: cover; min-height: 100vh; display: flex; justify-content: center; align-items: center; color: var(--text); overflow-x: hidden; }
         
-        body {
-            margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif;
-            background: url('fundosite.png') no-repeat center center fixed;
-            background-size: cover; min-height: 100vh;
-            display: flex; justify-content: center; align-items: center; color: var(--text);
-            overflow-x: hidden;
-        }
-        
-        /* MODO OVERLAY */
-        body.compact-mode { background: #000 !important; align-items: flex-start; justify-content: flex-start; padding: 10px; }
-        body.compact-mode .logo-fixo, body.compact-mode .ui-controls, body.compact-mode .quick-links, body.compact-mode .news-banner, body.compact-mode .disclaimer { display: none; }
-        body.compact-mode .main-container { max-width: 400px; margin: 0; background: rgba(0,0,0,0.95); border: 2px solid var(--primary); }
-        
+        .main-container { width: 95%; max-width: 800px; background: rgba(0, 0, 0, 0.85); padding: 25px; border-radius: 20px; backdrop-filter: blur(15px); border: 1px solid rgba(0, 217, 255, 0.1); max-height: 90vh; overflow-y: auto; position: relative; }
         .logo-fixo { position: fixed; top: 25px; left: 25px; width: 140px; filter: drop-shadow(0 0 10px var(--primary-glow)); }
         
-        /* QUICK LINKS */
         .quick-links { position: fixed; top: 25px; right: 25px; display: flex; flex-direction: column; gap: 10px; z-index: 100; }
-        .link-card {
-            background: rgba(0,0,0,0.8); border: 1px solid var(--primary-glow);
-            padding: 10px 15px; border-radius: 8px; text-decoration: none; color: #fff;
-            font-size: 11px; font-weight: bold; text-align: right; cursor: pointer;
-        }
-        .link-card:hover { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+        .link-card { background: rgba(0,0,0,0.8); border: 1px solid var(--primary-glow); padding: 10px 15px; border-radius: 8px; text-decoration: none; color: #fff; font-size: 11px; font-weight: bold; text-align: right; cursor: pointer; transition: 0.3s; }
 
-        /* MODAL */
-        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 2000; visibility: hidden; opacity: 0; }
+        /* LOGIN */
+        .login-box { width: 100%; max-width: 350px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+        .login-field { width: 100%; padding: 15px; background: rgba(255, 255, 255, 0.1); border: 1px solid #444; border-radius: 10px; color: #fff; text-align: center; font-size: 16px; box-sizing: border-box; outline: none; }
+        .btn-main { width: 100%; padding: 15px; background: transparent; border: 2px solid var(--primary); color: var(--primary); font-weight: bold; border-radius: 10px; cursor: pointer; text-transform: uppercase; }
+
+        /* MULTI STATUS */
+        .multi-status-bar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; padding: 15px; background: rgba(0, 217, 255, 0.05); border-radius: 12px; border: 2px solid var(--primary); }
+        .char-card { flex: 1; min-width: 140px; display: flex; justify-content: space-between; align-items: center; background: #000; padding: 8px 12px; border-radius: 8px; border: 1px solid #333; }
+        .btn-status-mini { border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 9px; transition: all 0.2s ease; }
+        .status-on { background: #00ff88; color: #000; box-shadow: 0 0 10px #00ff88; }
+        .status-off { background: #ff4444; color: #fff; }
+        .copy-active { background-color: var(--success) !important; color: #000 !important; box-shadow: 0 0 15px var(--success) !important; border: none !important; }
+
+        /* AVISOS */
+        .news-banner { background: rgba(0, 217, 255, 0.05); border: 2px solid var(--primary); border-radius: 10px; padding: 15px; margin-bottom: 20px; box-shadow: 0 0 10px var(--primary-glow); }
+        
+        /* MODAIS */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 3000; visibility: hidden; opacity: 0; transition: 0.3s; }
         .modal.active { visibility: visible; opacity: 1; }
-        .modal-content { 
-            background: #0a0f14; border: 2px solid var(--primary); 
-            padding: 25px; border-radius: 15px; width: 95%; max-width: 700px; position: relative;
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
-        .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--primary); font-weight: bold; }
+        .modal-content { background: #0a0f14; border: 2px solid var(--primary); padding: 25px; border-radius: 15px; width: 95%; max-width: 750px; position: relative; box-shadow: 0 0 25px var(--primary-glow); }
         
-        .tutor-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px; }
         .server-column { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid rgba(0, 217, 255, 0.2); }
-        .server-column h4 { color: var(--primary); text-align: center; margin: 0 0 10px 0; border-bottom: 1px solid var(--primary); padding-bottom: 5px; text-transform: uppercase; font-size: 14px; }
-        .tutor-name { font-size: 13px; color: #ccc; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .server-column h4 { color: var(--primary); text-align: center; border-bottom: 1px solid var(--primary); padding-bottom: 5px; margin-top:0; text-transform: uppercase; font-size: 13px; }
+        .tutor-row { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; color: #ccc; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: #444; }
+        .dot.active { background: #00ff88; box-shadow: 0 0 8px #00ff88; }
 
-        /* AVISO DA STAFF */
-        .news-banner { 
-            background: rgba(0, 217, 255, 0.05); 
-            border: 2px solid var(--primary); 
-            border-radius: 10px; 
-            padding: 15px; 
-            margin-bottom: 25px;
-            box-shadow: 0 0 10px var(--primary-glow);
-        }
-
-        .ui-controls { position: fixed; bottom: 30px; left: 30px; background: rgba(0,0,0,0.9); padding: 15px; border-radius: 12px; border: 2px solid var(--primary); z-index: 1000; }
-        
-        .main-container {
-            width: 95%; max-width: 800px; background: rgba(0, 0, 0, 0.85);
-            padding: 25px; border-radius: 20px; backdrop-filter: blur(15px);
-            box-sizing: border-box; max-height: 90vh; overflow-y: auto;
-            border: 1px solid rgba(0, 217, 255, 0.1);
-        }
-
+        /* BUSCA */
         .search-wrapper { position: relative; width: 100%; margin: 15px 0; }
-        input#searchInput {
-            width: 100%; padding: 15px; padding-right: 45px; background: rgba(0, 0, 0, 0.6);
-            border: 2px solid #444; border-radius: 10px; color: #fff; outline: none; box-sizing: border-box; font-size: 16px;
-        }
-        input#searchInput:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
-        
-        .btn-clear-search {
-            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; color: #666; font-size: 20px;
-            cursor: pointer; display: none; font-weight: bold;
-        }
-        .btn-clear-search:hover { color: var(--primary); }
+        input.search-input { width: 100%; padding: 15px; padding-right: 45px; background: rgba(0, 0, 0, 0.6); border: 2px solid #444; border-radius: 10px; color: #fff; outline: none; box-sizing: border-box; }
+        .btn-clear { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #666; font-size: 20px; cursor: pointer; display: none; font-weight: bold; }
+        .faq-item { background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 10px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        .faq-item { 
-            background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 10px; 
-            margin-top: 10px; display: flex; justify-content: space-between; align-items: center; 
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .faq-item.match { border: 2px solid var(--primary); box-shadow: 0 0 10px var(--primary-glow); background: rgba(0, 217, 255, 0.05); }
-
-        .btn-copy { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; min-width: 85px; }
-        .btn-copy:hover { background: var(--primary); color: #000; }
-        .btn-copy.success { background: #238636; border-color: #238636; color: white; }
-        
-        .disclaimer {
-            margin-top: 25px; padding-top: 15px; border-top: 1px solid #333;
-            text-align: center; color: #666; font-size: 11px; line-height: 1.4;
-        }
-
-        .badge { font-size: 9px; padding: 2px 5px; border-radius: 3px; font-weight: bold; margin-right: 5px; text-transform: uppercase; }
-        .badge-sugestao { background: var(--primary); color: #000; }
-        .badge-frequente { background: #ffcc00; color: #000; }
+        .spinner { width: 50px; height: 50px; border: 5px solid rgba(0, 217, 255, 0.1); border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .hidden { display: none !important; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-        mark { background: var(--primary); color: #000; border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -115,196 +62,215 @@
 
     <div class="quick-links">
         <a href="https://deusot.com/" target="_blank" class="link-card">SITE OFICIAL 🌐</a>
-        <div class="link-card" onclick="toggleModal(true)">LISTA DE TUTORES 👥</div>
+        <div class="link-card" onclick="toggleModal('tutorModal', true)">LISTA DE TUTORES 👥</div>
+        <div id="adminQuickBtn" class="link-card hidden" style="border-color:#ffcc00; color:#ffcc00;" onclick="toggleModal('adminModal', true)">ADMIN 📊</div>
+        <div class="link-card" onclick="location.reload()">SAIR 🚪</div>
     </div>
 
-    <div class="modal" id="tutorModal" onclick="if(event.target == this) toggleModal(false)">
+    <div class="modal" id="tutorModal" onclick="if(event.target == this) toggleModal('tutorModal', false)">
         <div class="modal-content">
-            <span class="close-modal" onclick="toggleModal(false)">×</span>
-            <h3 style="color: var(--primary); margin-top: 0; text-align: center; letter-spacing: 2px;">LISTA DE TUTORES</h3>
-            <div class="tutor-grid">
-                <div class="server-column">
-                    <h4>Titan</h4>
-                    <div id="titanList">
-                        <div class="tutor-name">Finalshot</div>
-                        <div class="tutor-name">Lord escanor</div>
-                        <div class="tutor-name">Grazyela</div>
-						<div class="tutor-name">Gato Titanico</div>
-                    </div>
-                </div>
-                <div class="server-column">
-                    <h4>Mercúrio</h4>
-                    <div id="mercurioList">
-                        <div class="tutor-name">Be Be</div>
-						<div class="tutor-name">Rafz Zagz</div>
-                    </div>
-                </div>
-                <div class="server-column">
-                    <h4>Netuno</h4>
-                    <div id="netunoList">
-                        <div class="tutor-name">...</div>
-                    </div>
-                </div>
+            <span style="position:absolute; top:10px; right:15px; cursor:pointer; color:var(--primary); font-weight:bold;" onclick="toggleModal('tutorModal', false)">✖</span>
+            <h3 style="color: var(--primary); text-align: center; margin-top:0;">EQUIPE ONLINE</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top:20px;">
+                <div class="server-column"><h4>Titan</h4><div id="list-Titan"></div></div>
+                <div class="server-column"><h4>Mercúrio</h4><div id="list-Mercurio"></div></div>
+                <div class="server-column"><h4>Netuno</h4><div id="list-Netuno"></div></div>
             </div>
         </div>
     </div>
 
-    <div class="ui-controls">
-        <label style="font-size: 10px; color: var(--primary); font-weight: bold;">OPACIDADE</label><br>
-        <input type="range" min="0.1" max="1" step="0.05" value="0.85" oninput="ajustarOpacidade(this.value)">
-        <div style="margin-top:10px;"><button style="background:var(--primary); border:none; padding:5px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:10px; color:#000;" onclick="toggleCompacto()">MODO OVERLAY</button></div>
+    <div class="modal" id="adminModal" onclick="if(event.target == this) toggleModal('adminModal', false)">
+        <div class="modal-content">
+            <h3 style="color: #ffcc00; text-align: center; margin-top:0;">RELATÓRIO DE STAFF</h3>
+            <div id="adminReport" style="max-height: 350px; overflow-y: auto;"></div>
+            <button onclick="confirmarLimpeza()" style="background:#ff4444; color:#fff; border:none; padding:10px; border-radius:5px; cursor:pointer; width:100%; margin-top:10px;">LIMPAR LOGS</button>
+        </div>
     </div>
 
-    <div class="main-container" id="container">
-        <div id="login-screen">
-            <h2 style="color: var(--primary); text-align: center;">🛡️ FAQ TUTORES</h2>
-            <input type="password" id="passInput" placeholder="Sua Senha" onkeypress="if(event.key === 'Enter') entrar()" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.6); border: 2px solid #444; border-radius: 10px; color: #fff; box-sizing: border-box; text-align: center; outline: none;">
-            <button class="btn-copy" style="width: 100%; margin-top: 15px; padding: 12px;" onclick="entrar()">AUTENTICAR</button>
+    <div class="main-container">
+        <div id="login-screen" class="login-box">
+            <h2 style="color: var(--primary); text-align: center; margin-bottom: 5px;">🛡️ LOGIN</h2>
+            <input type="text" id="userInput" class="login-field" placeholder="Nick do Personagem">
+            <input type="password" id="passInput" class="login-field" placeholder="Senha da Staff" onkeypress="if(event.key === 'Enter') entrar()">
+            <button class="btn-main" onclick="entrar()">ENTRAR NO PAINEL</button>
         </div>
 
         <div id="loading-screen" class="hidden">
-            <div style="text-align: center; padding: 40px; color: var(--primary); font-weight: bold;">CARREGANDO DADOS...</div>
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:50px;">
+                <div class="spinner"></div>
+                <p style="color: var(--primary); font-weight:bold;">SINCRONIZANDO COM O SERVIDOR...</p>
+            </div>
         </div>
 
         <div id="faq-content" class="hidden">
+            <div id="multiStatusArea" class="multi-status-bar"></div>
             <div class="news-banner">
-                <span style="font-size: 12px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">📢 MENSAGEM DO SISTEMA:</span>
-                <strong id="avisoTitulo" style="font-size: 16px; color: #fff;">...</strong>
-                <p id="avisoTexto" style="font-size: 14px; color: #ccc; margin: 5px 0 0 0;"></p>
+                <span style="font-size: 11px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">📢 MENSAGEM DO SISTEMA:</span>
+                <strong id="avisoTitulo" style="font-size: 16px;">Carregando...</strong>
+                <p id="avisoTexto" style="font-size: 13px; color: #ccc; margin: 5px 0 0 0;"></p>
             </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2 style="color: var(--primary); margin: 0; font-size: 18px;">LISTA DE PERGUNTAS</h2>
-                <div style="display: flex; gap: 10px;">
-                    <button id="btnExpand" class="hidden" onclick="toggleCompacto()" style="background:var(--primary); border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:10px; color:#000;">EXPANDIR</button>
-                    <button onclick="logout()" style="background: none; border: none; color: #666; cursor: pointer; font-size: 10px;">SAIR</button>
-                </div>
-            </div>
-
             <div class="search-wrapper">
-                <input type="text" id="searchInput" placeholder="Digite o termo de busca..." onkeyup="handleSearch()" autofocus>
-                <button id="btnClear" class="btn-clear-search" onclick="clearSearch()">✕</button>
+                <input type="text" id="searchInput" class="search-input" placeholder="Pesquisar comando ou dúvida..." onkeyup="handleSearch()">
+                <button id="btnClear" class="btn-clear" onclick="clearSearch()">✕</button>
             </div>
-            
             <div id="results"></div>
-
-            <div class="disclaimer">
-                <strong>Observação:</strong> Este link não é uma ferramenta oficial do site DeusOT.<br>
-                Criado exclusivamente para agilizar e padronizar as respostas da Staff.
-            </div>
         </div>
     </div>
 
 <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBh_ifJcUqw1w2bXKB9WbeCVgcNDMVnQ4o",
+        databaseURL: "https://deusot-staff-default-rtdb.firebaseio.com",
+        projectId: "deusot-staff",
+        appId: "1:688428489292:web:81eba3812370df3410b2e9"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
     const API_URL = 'https://script.google.com/macros/s/AKfycbxS-HsrfO6_StV7VRLilsMuk5h_RTshuudgOkfpUwM_tavdtMW4NM9cIewY8naXQN0J/exec';
-    let banco = [];
 
-    function toggleModal(show) { document.getElementById('tutorModal').classList.toggle('active', show); }
+    const listaStaff = [
+        { nick: "Finalshot", server: "Titan", admin: true, dono: "Nando" },
+        { nick: "Be Be", server: "Mercúrio", admin: true, dono: "Nando" },
+        { nick: "Lord escanor", server: "Titan", admin: false, dono: "Lord" },
+        { nick: "Grazyela", server: "Titan", admin: false, dono: "Grazy" }
+    ];
 
+    let bancoFAQ = [];
+    let meusChars = [];
+    let statusAtivos = {};
+
+    // --- RECOLOCADO: FUNÇÃO ESC PARA LIMPAR PESQUISA ---
     window.addEventListener('keydown', (e) => { 
         if (e.key === "Escape") {
-            if(document.getElementById('tutorModal').classList.contains('active')) toggleModal(false);
-            else clearSearch(); 
-        }
+            clearSearch();
+        } 
     });
 
-    window.onload = () => { if(localStorage.getItem('deusot_token')) exibirFAQ(); };
-    function toggleCompacto() {
-        document.body.classList.toggle('compact-mode');
-        document.getElementById('btnExpand').classList.toggle('hidden', !document.body.classList.contains('compact-mode'));
-    }
-    function ajustarOpacidade(val) { document.getElementById('container').style.backgroundColor = `rgba(0,0,0,${val})`; }
     function entrar() {
-        const p = document.getElementById('passInput').value;
-        if(p) { localStorage.setItem('deusot_token', p); exibirFAQ(); }
+        const input = document.getElementById('userInput').value.trim();
+        const pass = document.getElementById('passInput').value;
+        const find = listaStaff.find(s => s.nick.toLowerCase() === input.toLowerCase());
+        if(find && pass === "123321") {
+            meusChars = listaStaff.filter(s => s.dono === find.dono);
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('loading-screen').classList.remove('hidden');
+            carregarTudo(find.admin);
+        } else { alert("Dados incorretos!"); }
     }
-    function logout() { localStorage.removeItem('deusot_token'); location.reload(); }
 
-    function exibirFAQ() {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('loading-screen').classList.remove('hidden');
-        carregar();
-    }
-
-    async function carregar() {
+    async function carregarTudo(isAdmin) {
         try {
-            const res = await fetch(`${API_URL}?pass=${localStorage.getItem('deusot_token')}`);
+            const res = await fetch(`${API_URL}?pass=123321`);
             const data = await res.json();
-            if(data.erro) { alert("Acesso Negado."); logout(); return; }
-            banco = data.faq || [];
+            bancoFAQ = data.faq || [];
             if(data.aviso) {
                 document.getElementById('avisoTitulo').innerText = data.aviso.titulo;
                 document.getElementById('avisoTexto').innerText = data.aviso.texto;
             }
+        } catch (e) { console.error(e); }
+
+        db.ref('status').on('value', (snap) => {
+            const onData = snap.val() || {};
+            ["Titan", "Mercúrio", "Netuno"].forEach(s => {
+                const id = s === "Mercúrio" ? "Mercurio" : s;
+                const container = document.getElementById('list-' + id);
+                if(container) {
+                    container.innerHTML = "";
+                    listaStaff.filter(t => t.server === s).forEach(t => {
+                        const active = onData[t.nick.toLowerCase().replace(/\s/g, '_')] ? "active" : "";
+                        container.innerHTML += `<div class="tutor-row"><div class="dot ${active}"></div>${t.nick}</div>`;
+                    });
+                }
+            });
+        });
+
+        const area = document.getElementById('multiStatusArea');
+        area.innerHTML = "";
+        meusChars.forEach(c => {
+            area.innerHTML += `<div class="char-card"><span>${c.nick}</span><button id="btn-${c.nick.replace(/\s/g, '')}" class="btn-status-mini status-off" onclick="toggleStatus('${c.nick}')">OFFLINE</button></div>`;
+        });
+
+        setTimeout(() => {
             document.getElementById('loading-screen').classList.add('hidden');
             document.getElementById('faq-content').classList.remove('hidden');
-            render(banco);
-        } catch (e) { console.error(e); }
+            if(isAdmin) document.getElementById('adminQuickBtn').classList.remove('hidden');
+            render(bancoFAQ);
+        }, 1200);
+    }
+
+    function toggleStatus(nick) {
+        const btn = document.getElementById('btn-' + nick.replace(/\s/g, ''));
+        const nickKey = nick.toLowerCase().replace(/\s/g, '_');
+        if(!statusAtivos[nick]) {
+            statusAtivos[nick] = Date.now();
+            btn.innerText = "ONLINE"; btn.className = "btn-status-mini status-on";
+            db.ref('status/' + nickKey).set({ online: true });
+            db.ref('status/' + nickKey).onDisconnect().remove();
+        } else {
+            const min = Math.round((Date.now() - statusAtivos[nick]) / 60000);
+            db.ref('logs/' + nickKey).push({ tutor: nick, minutos: min, dataISO: new Date().toISOString().split('T')[0] });
+            db.ref('status/' + nickKey).remove();
+            btn.innerText = "OFFLINE"; btn.className = "btn-status-mini status-off";
+            delete statusAtivos[nick];
+        }
+    }
+
+    function render(lista) {
+        const out = document.getElementById('results');
+        if(!out) return;
+        out.innerHTML = lista.map(i => `
+            <div class="faq-item">
+                <div style="flex:1;">
+                    <div style="font-weight:bold; color:var(--primary);">${i.pergunta}</div>
+                    <div style="color:#bbb; font-size:12px;">${i.resposta}</div>
+                </div>
+                <button class="btn-status-mini status-on" style="min-width:85px;" onclick="copiar(this, '${i.resposta.replace(/'/g, "\\'")}')">COPIAR</button>
+            </div>
+        `).join('');
+    }
+
+    function copiar(btn, texto) {
+        navigator.clipboard.writeText(texto);
+        const originalText = "COPIAR";
+        btn.innerText = "COPIADO";
+        btn.classList.add('copy-active');
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.classList.remove('copy-active');
+        }, 1000);
     }
 
     function handleSearch() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        document.getElementById('btnClear').style.display = query.length > 0 ? 'block' : 'none';
-        
-        if(!query) { render(banco); return; }
-        const filtrados = banco.map(item => {
-            let score = 0;
-            const palavras = query.split(' ');
-            palavras.forEach(p => {
-                if(p.length > 2) {
-                    if(item.pergunta.toLowerCase().includes(p)) score += 3;
-                    if(item.resposta.toLowerCase().includes(p)) score += 1;
-                }
-            });
-            if(localStorage.getItem('freq_'+item.pergunta)) score += 2;
-            return { ...item, score };
-        }).filter(i => i.score > 0 || i.pergunta.toLowerCase().includes(query))
-          .sort((a, b) => b.score - a.score);
-        render(filtrados, query);
-    }
-
-    function render(lista, term = "") {
-        const out = document.getElementById('results');
-        out.innerHTML = lista.map(i => {
-            const isFreq = localStorage.getItem('freq_'+i.pergunta);
-            return `
-            <div class="faq-item ${i.score > 2 ? 'match' : ''}">
-                <div style="flex:1; padding-right:10px;">
-                    ${i.score > 2 ? '<span class="badge badge-sugestao">Sugestão</span>' : ''}
-                    ${isFreq ? '<span class="badge badge-frequente">Frequente</span>' : ''}
-                    <div style="font-weight:bold; color:var(--primary); font-size:14px;">${highlight(i.pergunta, term)}</div>
-                    <div style="color:#bbb; font-size:12px; margin-top:5px; line-height: 1.4;">${highlight(i.resposta, term)}</div>
-                </div>
-                <button class="btn-copy" onclick="copiar('${i.resposta.replace(/'/g, "\\'").replace(/\n/g, "\\n")}', this, '${i.pergunta.replace(/'/g, "\\'")}')">COPIAR</button>
-            </div>
-        `}).join('');
-    }
-
-    function highlight(text, term) {
-        if (!term) return text;
-        const pts = term.split(' ').filter(p => p.length > 2);
-        let html = text;
-        pts.forEach(p => {
-            const re = new RegExp(`(${p})`, "gi");
-            html = html.replace(re, "<mark>$1</mark>");
-        });
-        return html;
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const btnClear = document.getElementById('btnClear');
+        if(btnClear) btnClear.style.display = q ? 'block' : 'none';
+        render(bancoFAQ.filter(i => i.pergunta.toLowerCase().includes(q)));
     }
 
     function clearSearch() { 
-        document.getElementById('searchInput').value = ''; 
-        document.getElementById('btnClear').style.display = 'none';
-        render(banco); 
+        const input = document.getElementById('searchInput');
+        const btnClear = document.getElementById('btnClear');
+        if(input) input.value = ''; 
+        if(btnClear) btnClear.style.display = 'none'; 
+        render(bancoFAQ); 
     }
 
-    function copiar(txt, btn, pergunta) {
-        navigator.clipboard.writeText(txt).then(() => {
-            localStorage.setItem('freq_'+pergunta, true);
-            const old = btn.innerText;
-            btn.innerText = "COPIADO"; btn.classList.add('success');
-            setTimeout(() => { btn.innerText = old; btn.classList.remove('success'); }, 800);
-        });
+    async function abrirAdmin() {
+        const snap = await db.ref('logs').once('value');
+        const logs = snap.val() || {};
+        let html = "<table style='width:100%; border-collapse:collapse; color:#ccc;'><tr><th style='text-align:left; color:var(--primary);'>TUTOR</th><th>TOTAL (Horas)</th></tr>";
+        const stats = {};
+        for(let n in logs) for(let id in logs[n]) {
+            const i = logs[n][id];
+            if(!stats[i.tutor]) stats[i.tutor] = 0;
+            stats[i.tutor] += i.minutos;
+        }
+        for(let n in stats) html += `<tr style='border-bottom:1px solid #222;'><td style='padding:8px;'>${n}</td><td>${(stats[n]/60).toFixed(1)}h</td></tr>`;
+        document.getElementById('adminReport').innerHTML = html + "</table>";
     }
+
+    function confirmarLimpeza() { if(confirm("Apagar tudo?")) { db.ref('logs').remove(); abrirAdmin(); } }
+    function toggleModal(id, show) { document.getElementById(id).classList.toggle('active', show); if(id === 'adminModal' && show) abrirAdmin(); }
 </script>
 </body>
 </html>
