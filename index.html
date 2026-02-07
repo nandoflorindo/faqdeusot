@@ -3,55 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tutores DeusOT</title>
+    <title>FAQ Tutores DeusOT - DeusOT</title>
     <style>
-        :root {
-            --primary: #00ffcc;
-            --text: #ffffff;
+        :root { 
+            --primary: #00d9ff; /* AZUL NEON */
+            --primary-glow: rgba(0, 217, 255, 0.4);
+            --text: #ffffff; 
         }
-
+        
         body {
-            margin: 0; padding: 0;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif;
             background: url('fundosite.png') no-repeat center center fixed;
-            background-size: cover;
-            min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            color: var(--text);
+            background-size: cover; min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; color: var(--text);
+            overflow-x: hidden;
+        }
+        
+        /* MODO OVERLAY */
+        body.compact-mode { background: #000 !important; align-items: flex-start; justify-content: flex-start; padding: 10px; }
+        body.compact-mode .logo-fixo, body.compact-mode .ui-controls, body.compact-mode .quick-links, body.compact-mode .news-banner, body.compact-mode .disclaimer { display: none; }
+        body.compact-mode .main-container { max-width: 400px; margin: 0; background: rgba(0,0,0,0.95); border: 2px solid var(--primary); }
+        
+        .logo-fixo { position: fixed; top: 25px; left: 25px; width: 140px; filter: drop-shadow(0 0 10px var(--primary-glow)); }
+        
+        /* QUICK LINKS */
+        .quick-links { position: fixed; top: 25px; right: 25px; display: flex; flex-direction: column; gap: 10px; z-index: 100; }
+        .link-card {
+            background: rgba(0,0,0,0.8); border: 1px solid var(--primary-glow);
+            padding: 10px 15px; border-radius: 8px; text-decoration: none; color: #fff;
+            font-size: 11px; font-weight: bold; text-align: right; cursor: pointer;
+        }
+        .link-card:hover { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 2000; visibility: hidden; opacity: 0; }
+        .modal.active { visibility: visible; opacity: 1; }
+        .modal-content { 
+            background: #0a0f14; border: 2px solid var(--primary); 
+            padding: 25px; border-radius: 15px; width: 95%; max-width: 700px; position: relative;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+        .close-modal { position: absolute; top: 10px; right: 15px; font-size: 24px; cursor: pointer; color: var(--primary); font-weight: bold; }
+        
+        .tutor-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .server-column { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid rgba(0, 217, 255, 0.2); }
+        .server-column h4 { color: var(--primary); text-align: center; margin: 0 0 10px 0; border-bottom: 1px solid var(--primary); padding-bottom: 5px; text-transform: uppercase; font-size: 14px; }
+        .tutor-name { font-size: 13px; color: #ccc; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: center; }
+
+        /* AVISO DA STAFF */
+        .news-banner { 
+            background: rgba(0, 217, 255, 0.05); 
+            border: 2px solid var(--primary); 
+            border-radius: 10px; 
+            padding: 15px; 
+            margin-bottom: 25px;
+            box-shadow: 0 0 10px var(--primary-glow);
         }
 
-        .logo-fixo {
-            position: fixed; top: 25px; left: 25px; width: 140px; z-index: 100;
-            filter: drop-shadow(0 0 15px rgba(0, 255, 204, 0.4));
-        }
-
-        .ui-controls {
-            position: fixed; bottom: 30px; left: 30px;
-            background: rgba(0,0,0,0.9); padding: 15px; border-radius: 12px;
-            z-index: 1000; border: 2px solid var(--primary);
-        }
-        .ui-controls label { font-size: 12px; font-weight: bold; color: var(--primary); display: block; margin-bottom: 5px; }
-
+        .ui-controls { position: fixed; bottom: 30px; left: 30px; background: rgba(0,0,0,0.9); padding: 15px; border-radius: 12px; border: 2px solid var(--primary); z-index: 1000; }
+        
         .main-container {
-            width: 95%; max-width: 800px;
-            background: rgba(0, 0, 0, 0.75);
-            padding: 30px; border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-            box-sizing: border-box;
-            max-height: 90vh; overflow-y: auto; position: relative;
+            width: 95%; max-width: 800px; background: rgba(0, 0, 0, 0.85);
+            padding: 25px; border-radius: 20px; backdrop-filter: blur(15px);
+            box-sizing: border-box; max-height: 90vh; overflow-y: auto;
+            border: 1px solid rgba(0, 217, 255, 0.1);
         }
 
-        .search-wrapper { position: relative; width: 100%; margin-bottom: 20px; }
+        .search-wrapper { position: relative; width: 100%; margin: 15px 0; }
         input#searchInput {
-            width: 100%; padding: 15px; padding-right: 45px;
-            background: rgba(0, 0, 0, 0.6); border: 1px solid #444;
-            border-radius: 10px; color: #fff; font-size: 16px;
-            outline: none; box-sizing: border-box;
+            width: 100%; padding: 15px; padding-right: 45px; background: rgba(0, 0, 0, 0.6);
+            border: 2px solid #444; border-radius: 10px; color: #fff; outline: none; box-sizing: border-box; font-size: 16px;
         }
-        input#searchInput:focus { border-color: var(--primary); }
-
+        input#searchInput:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+        
         .btn-clear-search {
             position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
             background: none; border: none; color: #666; font-size: 20px;
@@ -59,102 +83,142 @@
         }
         .btn-clear-search:hover { color: var(--primary); }
 
-        .loader-container { display: flex; flex-direction: column; align-items: center; padding: 50px 0; }
-        .spinner {
-            width: 50px; height: 50px; border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid var(--primary); border-radius: 50%;
-            animation: spin 1s linear infinite; margin-bottom: 15px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        .faq-item {
-            background: rgba(255, 255, 255, 0.05); padding: 18px;
-            border-radius: 10px; margin-top: 15px;
-            display: flex; justify-content: space-between; align-items: center;
+        .faq-item { 
+            background: rgba(255, 255, 255, 0.03); padding: 15px; border-radius: 10px; 
+            margin-top: 10px; display: flex; justify-content: space-between; align-items: center; 
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        .faq-item.match { border: 2px solid var(--primary); box-shadow: 0 0 10px var(--primary-glow); background: rgba(0, 217, 255, 0.05); }
 
-        mark { background: var(--primary); color: #000; border-radius: 3px; padding: 0 2px; }
-
-        .btn-copy {
-            background: transparent; border: 1px solid var(--primary);
-            color: var(--primary); padding: 10px 15px; border-radius: 6px;
-            cursor: pointer; font-weight: bold; min-width: 100px;
-        }
+        .btn-copy { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; min-width: 85px; }
+        .btn-copy:hover { background: var(--primary); color: #000; }
         .btn-copy.success { background: #238636; border-color: #238636; color: white; }
+        
+        .disclaimer {
+            margin-top: 25px; padding-top: 15px; border-top: 1px solid #333;
+            text-align: center; color: #666; font-size: 11px; line-height: 1.4;
+        }
+
+        .badge { font-size: 9px; padding: 2px 5px; border-radius: 3px; font-weight: bold; margin-right: 5px; text-transform: uppercase; }
+        .badge-sugestao { background: var(--primary); color: #000; }
+        .badge-frequente { background: #ffcc00; color: #000; }
 
         .hidden { display: none !important; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        mark { background: var(--primary); color: #000; border-radius: 3px; }
     </style>
 </head>
 <body>
 
     <img src="logo.png" alt="Logo" class="logo-fixo">
 
+    <div class="quick-links">
+        <a href="https://deusot.com/" target="_blank" class="link-card">SITE OFICIAL 🌐</a>
+        <div class="link-card" onclick="toggleModal(true)">LISTA DE TUTORES 👥</div>
+    </div>
+
+    <div class="modal" id="tutorModal" onclick="if(event.target == this) toggleModal(false)">
+        <div class="modal-content">
+            <span class="close-modal" onclick="toggleModal(false)">×</span>
+            <h3 style="color: var(--primary); margin-top: 0; text-align: center; letter-spacing: 2px;">LISTA DE TUTORES</h3>
+            <div class="tutor-grid">
+                <div class="server-column">
+                    <h4>Titan</h4>
+                    <div id="titanList">
+                        <div class="tutor-name">Finalshot</div>
+                        <div class="tutor-name">Lord escanor</div>
+                        <div class="tutor-name">Grazyela</div>
+						<div class="tutor-name">Gato Titanico</div>
+                    </div>
+                </div>
+                <div class="server-column">
+                    <h4>Mercúrio</h4>
+                    <div id="mercurioList">
+                        <div class="tutor-name">Be Be</div>
+						<div class="tutor-name">Rafz Zagz</div>
+                    </div>
+                </div>
+                <div class="server-column">
+                    <h4>Netuno</h4>
+                    <div id="netunoList">
+                        <div class="tutor-name">...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="ui-controls">
-        <label>OPACIDADE</label>
-        <input type="range" min="0.1" max="1" step="0.05" value="0.75" oninput="ajustarOpacidade(this.value)">
+        <label style="font-size: 10px; color: var(--primary); font-weight: bold;">OPACIDADE</label><br>
+        <input type="range" min="0.1" max="1" step="0.05" value="0.85" oninput="ajustarOpacidade(this.value)">
+        <div style="margin-top:10px;"><button style="background:var(--primary); border:none; padding:5px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:10px; color:#000;" onclick="toggleCompacto()">MODO OVERLAY</button></div>
     </div>
 
     <div class="main-container" id="container">
         <div id="login-screen">
-            <h2 style="color: var(--primary);">Tutores DeusOT</h2>
-            <input type="password" id="passInput" placeholder="Senha" onkeypress="if(event.key === 'Enter') entrar()" 
-                   style="width: 100%; padding: 15px; background: rgba(0,0,0,0.6); border: 1px solid #444; border-radius: 10px; color: #fff; box-sizing: border-box;">
-            <button class="btn-copy" style="width: 100%; margin-top: 20px; padding: 15px;" onclick="entrar()">ENTRAR</button>
+            <h2 style="color: var(--primary); text-align: center;">🛡️ FAQ TUTORES</h2>
+            <input type="password" id="passInput" placeholder="Sua Senha" onkeypress="if(event.key === 'Enter') entrar()" style="width: 100%; padding: 15px; background: rgba(0,0,0,0.6); border: 2px solid #444; border-radius: 10px; color: #fff; box-sizing: border-box; text-align: center; outline: none;">
+            <button class="btn-copy" style="width: 100%; margin-top: 15px; padding: 12px;" onclick="entrar()">AUTENTICAR</button>
         </div>
 
         <div id="loading-screen" class="hidden">
-            <div class="loader-container">
-                <div class="spinner"></div>
-                <p style="color: var(--primary);">CARREGANDO...</p>
-            </div>
+            <div style="text-align: center; padding: 40px; color: var(--primary); font-weight: bold;">CARREGANDO DADOS...</div>
         </div>
 
         <div id="faq-content" class="hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h2 style="color: var(--primary); margin: 0;">FAQ</h2>
-                <button onclick="logout()" style="background: none; border: none; color: #666; cursor: pointer; font-size: 11px;">Sair</button>
+            <div class="news-banner">
+                <span style="font-size: 12px; color: var(--primary); font-weight: bold; display: block; margin-bottom: 5px;">📢 MENSAGEM DO SISTEMA:</span>
+                <strong id="avisoTitulo" style="font-size: 16px; color: #fff;">...</strong>
+                <p id="avisoTexto" style="font-size: 14px; color: #ccc; margin: 5px 0 0 0;"></p>
             </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2 style="color: var(--primary); margin: 0; font-size: 18px;">LISTA DE PERGUNTAS</h2>
+                <div style="display: flex; gap: 10px;">
+                    <button id="btnExpand" class="hidden" onclick="toggleCompacto()" style="background:var(--primary); border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-size:10px; color:#000;">EXPANDIR</button>
+                    <button onclick="logout()" style="background: none; border: none; color: #666; cursor: pointer; font-size: 10px;">SAIR</button>
+                </div>
+            </div>
+
             <div class="search-wrapper">
-                <input type="text" id="searchInput" placeholder="Pesquisar..." onkeyup="handleSearch()" autofocus>
+                <input type="text" id="searchInput" placeholder="Digite o termo de busca..." onkeyup="handleSearch()" autofocus>
                 <button id="btnClear" class="btn-clear-search" onclick="clearSearch()">✕</button>
             </div>
+            
             <div id="results"></div>
+
+            <div class="disclaimer">
+                <strong>Observação:</strong> Este link não é uma ferramenta oficial do site DeusOT.<br>
+                Criado exclusivamente para agilizar e padronizar as respostas da Staff.
+            </div>
         </div>
     </div>
 
 <script>
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwOP2umvwMcb9O-W706xGoykmrRRqurI3vbLCkU99Xnff9sr_8lCfNAlQjBYuokWyJL/exec';
-    const SENHA_CORRETA = "123321";
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxS-HsrfO6_StV7VRLilsMuk5h_RTshuudgOkfpUwM_tavdtMW4NM9cIewY8naXQN0J/exec';
     let banco = [];
 
-    // --- NOVA FUNÇÃO: VERIFICAÇÃO AUTOMÁTICA AO ABRIR ---
-    window.onload = function() {
-        const senhaSalva = localStorage.getItem('deusot_token');
-        if (senhaSalva === SENHA_CORRETA) {
-            exibirFAQ();
-        }
-    };
+    function toggleModal(show) { document.getElementById('tutorModal').classList.toggle('active', show); }
 
-    window.addEventListener('keydown', (e) => {
-        if (e.key === "Escape") clearSearch();
+    window.addEventListener('keydown', (e) => { 
+        if (e.key === "Escape") {
+            if(document.getElementById('tutorModal').classList.contains('active')) toggleModal(false);
+            else clearSearch(); 
+        }
     });
 
-    function ajustarOpacidade(val) {
-        document.getElementById('container').style.backgroundColor = `rgba(0,0,0,${val})`;
+    window.onload = () => { if(localStorage.getItem('deusot_token')) exibirFAQ(); };
+    function toggleCompacto() {
+        document.body.classList.toggle('compact-mode');
+        document.getElementById('btnExpand').classList.toggle('hidden', !document.body.classList.contains('compact-mode'));
     }
-
+    function ajustarOpacidade(val) { document.getElementById('container').style.backgroundColor = `rgba(0,0,0,${val})`; }
     function entrar() {
-        const inputSenha = document.getElementById('passInput').value;
-        if(inputSenha === SENHA_CORRETA) {
-            localStorage.setItem('deusot_token', inputSenha); // Salva a senha no navegador
-            exibirFAQ();
-        } else { 
-            alert("Senha incorreta."); 
-        }
+        const p = document.getElementById('passInput').value;
+        if(p) { localStorage.setItem('deusot_token', p); exibirFAQ(); }
     }
+    function logout() { localStorage.removeItem('deusot_token'); location.reload(); }
 
     function exibirFAQ() {
         document.getElementById('login-screen').classList.add('hidden');
@@ -162,66 +226,84 @@
         carregar();
     }
 
-    function logout() {
-        localStorage.removeItem('deusot_token');
-        location.reload();
-    }
-
     async function carregar() {
         try {
-            const res = await fetch(API_URL);
-            banco = await res.json();
-            setTimeout(() => {
-                document.getElementById('loading-screen').classList.add('hidden');
-                document.getElementById('faq-content').classList.remove('hidden');
-                document.getElementById('searchInput').focus();
-                render(banco);
-            }, 500);
-        } catch (e) { alert("Erro ao carregar dados."); }
+            const res = await fetch(`${API_URL}?pass=${localStorage.getItem('deusot_token')}`);
+            const data = await res.json();
+            if(data.erro) { alert("Acesso Negado."); logout(); return; }
+            banco = data.faq || [];
+            if(data.aviso) {
+                document.getElementById('avisoTitulo').innerText = data.aviso.titulo;
+                document.getElementById('avisoTexto').innerText = data.aviso.texto;
+            }
+            document.getElementById('loading-screen').classList.add('hidden');
+            document.getElementById('faq-content').classList.remove('hidden');
+            render(banco);
+        } catch (e) { console.error(e); }
+    }
+
+    function handleSearch() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        document.getElementById('btnClear').style.display = query.length > 0 ? 'block' : 'none';
+        
+        if(!query) { render(banco); return; }
+        const filtrados = banco.map(item => {
+            let score = 0;
+            const palavras = query.split(' ');
+            palavras.forEach(p => {
+                if(p.length > 2) {
+                    if(item.pergunta.toLowerCase().includes(p)) score += 3;
+                    if(item.resposta.toLowerCase().includes(p)) score += 1;
+                }
+            });
+            if(localStorage.getItem('freq_'+item.pergunta)) score += 2;
+            return { ...item, score };
+        }).filter(i => i.score > 0 || i.pergunta.toLowerCase().includes(query))
+          .sort((a, b) => b.score - a.score);
+        render(filtrados, query);
+    }
+
+    function render(lista, term = "") {
+        const out = document.getElementById('results');
+        out.innerHTML = lista.map(i => {
+            const isFreq = localStorage.getItem('freq_'+i.pergunta);
+            return `
+            <div class="faq-item ${i.score > 2 ? 'match' : ''}">
+                <div style="flex:1; padding-right:10px;">
+                    ${i.score > 2 ? '<span class="badge badge-sugestao">Sugestão</span>' : ''}
+                    ${isFreq ? '<span class="badge badge-frequente">Frequente</span>' : ''}
+                    <div style="font-weight:bold; color:var(--primary); font-size:14px;">${highlight(i.pergunta, term)}</div>
+                    <div style="color:#bbb; font-size:12px; margin-top:5px; line-height: 1.4;">${highlight(i.resposta, term)}</div>
+                </div>
+                <button class="btn-copy" onclick="copiar('${i.resposta.replace(/'/g, "\\'").replace(/\n/g, "\\n")}', this, '${i.pergunta.replace(/'/g, "\\'")}')">COPIAR</button>
+            </div>
+        `}).join('');
     }
 
     function highlight(text, term) {
         if (!term) return text;
-        const re = new RegExp(`(${term})`, "gi");
-        return text.replace(re, "<mark>$1</mark>");
+        const pts = term.split(' ').filter(p => p.length > 2);
+        let html = text;
+        pts.forEach(p => {
+            const re = new RegExp(`(${p})`, "gi");
+            html = html.replace(re, "<mark>$1</mark>");
+        });
+        return html;
     }
 
-    function render(lista) {
-        const term = document.getElementById('searchInput').value;
-        const out = document.getElementById('results');
-        out.innerHTML = lista.map(item => `
-            <div class="faq-item">
-                <div style="flex:1;">
-                    <div class="pergunta">${highlight(item.pergunta, term)}</div>
-                    <div class="resposta" style="color:#bbb; font-size:14px; margin-top:8px;">${highlight(item.resposta, term)}</div>
-                </div>
-                <button class="btn-copy" onclick="copiar('${item.resposta.replace(/'/g, "\\'")}', this)">COPIAR</button>
-            </div>
-        `).join('');
+    function clearSearch() { 
+        document.getElementById('searchInput').value = ''; 
+        document.getElementById('btnClear').style.display = 'none';
+        render(banco); 
     }
 
-    function handleSearch() {
-        const t = document.getElementById('searchInput').value.toLowerCase();
-        document.getElementById('btnClear').style.display = t.length > 0 ? 'block' : 'none';
-        render(banco.filter(i => i.pergunta.toLowerCase().includes(t) || i.resposta.toLowerCase().includes(t)));
-    }
-
-    function clearSearch() {
-        const input = document.getElementById('searchInput');
-        if(input) {
-            input.value = '';
-            input.focus();
-            document.getElementById('btnClear').style.display = 'none';
-            render(banco);
-        }
-    }
-
-    function copiar(txt, btn) {
-        navigator.clipboard.writeText(txt);
-        const original = btn.innerText;
-        btn.innerText = "COPIADO";
-        btn.classList.add('success');
-        setTimeout(() => { btn.innerText = original; btn.classList.remove('success'); }, 800);
+    function copiar(txt, btn, pergunta) {
+        navigator.clipboard.writeText(txt).then(() => {
+            localStorage.setItem('freq_'+pergunta, true);
+            const old = btn.innerText;
+            btn.innerText = "COPIADO"; btn.classList.add('success');
+            setTimeout(() => { btn.innerText = old; btn.classList.remove('success'); }, 800);
+        });
     }
 </script>
 </body>
